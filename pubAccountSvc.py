@@ -38,7 +38,7 @@ def wrap2sideBox( txt ):
 
 def pushLine( mylist, txt ):
     txtLines = textwrap.wrap(txt, width=25)
-    mylist.append('\n'.join(txtLines))
+    mylist += txtLines
 
 def gradientFill(img,c1,c2):
     (w,h) = img.size
@@ -54,10 +54,10 @@ def gradientFill(img,c1,c2):
             d.point((x,y),fill=(bgR,bgG,bgB))
 
 def addQR(img, positionXY):
-    qr = qrcode.QRCode(box_size=2)
+    qr = qrcode.QRCode(box_size=2,border=0)
     qr.add_data('http://weixin.qq.com/r/IxDr8_-EirL1rauQ90Ux')
     qr.make()
-    qr_img = qr.make_image()
+    qr_img = qr.make_image(fill_color=color1, back_color=colorBGtop)
     img.paste(qr_img,positionXY)
 
 
@@ -73,6 +73,7 @@ def imgGen(message):
     row5 = 310
     row6 = 390
 
+    colorBGtop = (200,245,246)
     colorBG = (255,250,240)
     color1 = (0,64,0)
     colorGood = (102,0,0)
@@ -93,7 +94,7 @@ def imgGen(message):
 
     img =  Image.new( mode = "RGB", size = (imgW, imgH), color = colorBG )
     # optionally render a gradient background
-    gradientFill(img,(200,245,246), colorBG)
+    gradientFill(img, colorBGtop, colorBG)
 
     addQR(img, (498,48) )
     draw = ImageDraw.Draw(img)
@@ -144,7 +145,7 @@ def imgGen(message):
     pushLine(misc, '【九宫飞星】' + a.get_the9FlyStar())
     pushLine(misc, '【吉神方位】' + ' '.join(a.get_luckyGodsDirection()))
 
-    draw.text((imgW/2, row6+boxH/2-10), '\n'.join(misc), fill=color1, anchor="mm", font=font8)
+    draw.text((imgW/2, row6+boxH/2-10), '\n'.join(misc[0:15]), fill=color1, anchor="mm", font=font8)
 
     return img
 
@@ -160,10 +161,8 @@ def uploadImg(img):
 
 @robot.handler
 def hello(message):
-
     img =  imgGen( message )
     m_id = uploadImg( img )
-
     return ImageReply(message=message, media_id=m_id)
 
 # 让服务器监听在 0.0.0.0:80
