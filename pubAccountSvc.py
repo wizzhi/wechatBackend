@@ -34,7 +34,7 @@ def jieqi( l ):
 
 def wrap2sideBox( txt ):
     txtLines = textwrap.wrap(txt, width=11)
-    return '\n'.join(txtLines)
+    return '\n'.join(txtLines[0:10]) # 最多取10行，太多写不下
 
 def pushLine( mylist, txt ):
     txtLines = textwrap.wrap(txt, width=25)
@@ -63,7 +63,7 @@ def addQR(img, positionXY):
 
 def imgGen(message):
     (imgW,imgH)=(600,600)
-    (boxW,boxH) = (130,180)
+    (boxW,boxH) = (130,190)
     boxSpacing = 20
     fontname1 = 'NotoSansCJK-Medium.ttc'
     row1 = 30
@@ -71,7 +71,7 @@ def imgGen(message):
     row3 = 240
     row4 = row3+35
     row5 = 310
-    row6 = 400
+    row6 = 390
 
     colorBG = (255,250,240)
     color1 = (0,64,0)
