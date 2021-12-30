@@ -53,17 +53,17 @@ def gradientFill(img,c1,c2):
         for x in range(0,w):
             d.point((x,y),fill=(bgR,bgG,bgB))
 
-def addQR(img, positionXY):
+def addQR(img, positionXY, color_front, color_back ):
     qr = qrcode.QRCode(box_size=2,border=0)
     qr.add_data('http://weixin.qq.com/r/IxDr8_-EirL1rauQ90Ux')
     qr.make()
-    qr_img = qr.make_image(fill_color=color1, back_color=colorBGtop)
+    qr_img = qr.make_image(fill_color=color_front, back_color=color_back)
     img.paste(qr_img,positionXY)
 
 
 def imgGen(message):
     (imgW,imgH)=(600,600)
-    (boxW,boxH) = (130,190)
+    (boxW,boxH) = (130,200)
     boxSpacing = 20
     fontname1 = 'NotoSansCJK-Medium.ttc'
     row1 = 30
@@ -96,7 +96,7 @@ def imgGen(message):
     # optionally render a gradient background
     gradientFill(img, colorBGtop, colorBG)
 
-    addQR(img, (498,48) )
+    addQR(img, (507,57),color1, colorBGtop )
     draw = ImageDraw.Draw(img)
     draw.text((imgW-60, row2), "微信扫码畅查", fill=colorBad, anchor="mm", font=font8)
 
@@ -145,13 +145,15 @@ def imgGen(message):
     pushLine(misc, '【九宫飞星】' + a.get_the9FlyStar())
     pushLine(misc, '【吉神方位】' + ' '.join(a.get_luckyGodsDirection()))
 
-    draw.text((imgW/2, row6+boxH/2-10), '\n'.join(misc[0:15]), fill=color1, anchor="mm", font=font8)
+    draw.text((imgW/2, row6+boxH/2-10), '\n'.join(misc[0:13]), fill=color1, anchor="mm", font=font8)
+    
+    draw.text((imgW, imgH), '%s年·%s月·%s日·%s时' % (a.year8Char, a.month8Char, a.day8Char, a.twohour8Char) , fill=colorBad, anchor="rs", font=font6)
 
     return img
 
 def uploadImg(img):
     buf = BytesIO()
-    #img.save("rand.jpg")
+    #img.save("rand.png")
     img.save(buf, format='PNG')
     buf.seek(0)
     buf.name = 'rand.png'
