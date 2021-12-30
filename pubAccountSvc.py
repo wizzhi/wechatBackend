@@ -41,17 +41,17 @@ def jieqi( l ):
         return "后天" + l.nextSolarTerm
     return lunar.lunarDayNameList[(d-1) % 30] + l.nextSolarTerm
 
-# 塞近两边的框，最多取10行，太多写不下
+# 按字数折，为行塞进两边的框。最多取10行，太多写不下
 def wrap2sideBox( txt ):
     txtLines = textwrap.wrap(txt, width=11)
     return '\n'.join(txtLines[0:10])
 
-# 中间下部的那堆小字
+# 按字数折行，针对下部中间的那堆小字
 def pushLine( mylist, txt ):
     txtLines = textwrap.wrap(txt, width=25)
     mylist += txtLines
 
-# 渐变填充背静
+# 渐变填充背景
 def gradientFill(img,c1,c2):
     (w,h) = img.size
     d = ImageDraw.Draw(img)
@@ -85,13 +85,11 @@ def imgGen(message):
     row4 = row3+35
     row5 = 310
     row6 = 390
-
     colorBGtop = (200,245,246)
     colorBG = (255,250,240)
     color1 = (0,64,0)
     colorGood = (102,0,0)
     colorBad = (64,64,64)
-
     font1 = ImageFont.truetype( fontname1, size=45)
     font2 = ImageFont.truetype( fontname1, size=35)
     font3 = ImageFont.truetype( fontname1, size=200)
@@ -102,6 +100,7 @@ def imgGen(message):
     #font7.set_variation_by_name('Bold')
     font8 = ImageFont.truetype( fontname1, size=12)
 
+    # 这个日期可能最好提出来，参数化
     d = datetime.datetime.now()
     a = lunar.Lunar(d)
 
@@ -157,7 +156,7 @@ def imgGen(message):
     pushLine(misc, '【吉神方位】' + ' '.join(a.get_luckyGodsDirection()))
     draw.text((imgW/2, row6+boxH/2-10), '\n'.join(misc[0:13]), fill=color1, anchor="mm", font=font8)
     
-    draw.text((imgW, imgH), '%s年·%s月·%s日·%s时' % (a.year8Char, a.month8Char, a.day8Char, a.twohour8Char) , fill=colorBad, anchor="rs", font=font6)
+    draw.text((imgW, imgH), '%s年·%s月·%s日·%s时 敬制 ' % (a.year8Char, a.month8Char, a.day8Char, a.twohour8Char) , fill=colorBad, anchor="rs", font=font6)
 
     return img
 
