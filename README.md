@@ -1,8 +1,6 @@
 # 微信公众号后台服务
-向公众号发送任意信息后返回当日老黄历图片
-
-![2021 12 30](https://user-images.githubusercontent.com/3489487/147673531-d5aac188-2ade-4ea7-9531-3b2a66d105a9.png)
-
+向公众号发送任意信息后返回当日老黄历图片  
+![2021 12 30](https://user-images.githubusercontent.com/3489487/147736683-98aeea14-bde5-4201-906f-701eea1ade8e.png)
 
 # 运行环境配置
 python3  
