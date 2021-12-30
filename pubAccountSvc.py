@@ -162,10 +162,19 @@ def uploadImg(img):
     return mid
 
 @robot.handler
-def hello(message):
+def handle(message, session):
+    count = session.get("count", 0) + 1
+    session["count"] = count
+    if count % 2 == 1 :
+        return ouija( message )
+    return "我现在除了做日历啥也不会，图片已经发了。\n有空多聊聊，说不定很快就能发现我的新本领～"
+
+#robot.key_click("ouija")
+def ouija(message):
     img =  imgGen( message )
     m_id = uploadImg( img )
     return ImageReply(message=message, media_id=m_id)
+
 
 # 让服务器监听在 0.0.0.0:80
 robot.config['HOST'] = '0.0.0.0'
