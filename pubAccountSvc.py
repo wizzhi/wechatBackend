@@ -1,20 +1,17 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-import werobot
-from werobot.replies import ImageReply
-
 import datetime
+import textwrap
 from io import BytesIO, BufferedReader
+from PIL import Image, ImageDraw, ImageFont
 
 import sys
 sys.path.append("/xxxxx/pyLunarCalendar")
 import lunar
-import textwrap
 import qrcode
-
-
-from PIL import Image, ImageDraw, ImageFont
+import werobot
+from werobot.replies import ImageReply
 
 robot = werobot.WeRoBot(token='xxxxx')
 robot.config["APP_ID"]="xxxxx"
@@ -22,6 +19,18 @@ robot.config["APP_SECRET"]="xxxxx"
 #robot.logger.setLevel('DEBUG')
 client=robot.client
 
+'''
+# 帐号主体为个人，无法开通微信认证, 无权定制菜单
+client.create_menu({
+    "button":[{
+         "type": "click",
+         "name": "算一卦",
+         "key": "ouija"
+    }]
+})
+'''
+
+# 当日节气或者下一个节气
 def jieqi( l ):
     if l.todaySolarTerms and l.todaySolarTerms != '无':
         return "今日" + l.todaySolarTerms
@@ -32,14 +41,17 @@ def jieqi( l ):
         return "后天" + l.nextSolarTerm
     return lunar.lunarDayNameList[(d-1) % 30] + l.nextSolarTerm
 
+# 塞近两边的框，最多取10行，太多写不下
 def wrap2sideBox( txt ):
     txtLines = textwrap.wrap(txt, width=11)
-    return '\n'.join(txtLines[0:10]) # 最多取10行，太多写不下
+    return '\n'.join(txtLines[0:10])
 
+# 中间下部的那堆小字
 def pushLine( mylist, txt ):
     txtLines = textwrap.wrap(txt, width=25)
     mylist += txtLines
 
+# 渐变填充背静
 def gradientFill(img,c1,c2):
     (w,h) = img.size
     d = ImageDraw.Draw(img)
@@ -53,6 +65,7 @@ def gradientFill(img,c1,c2):
         for x in range(0,w):
             d.point((x,y),fill=(bgR,bgG,bgB))
 
+# 添加二维码
 def addQR(img, positionXY, color_front, color_back ):
     qr = qrcode.QRCode(box_size=2,border=0)
     qr.add_data('http://weixin.qq.com/r/IxDr8_-EirL1rauQ90Ux')
@@ -60,7 +73,7 @@ def addQR(img, positionXY, color_front, color_back ):
     qr_img = qr.make_image(fill_color=color_front, back_color=color_back)
     img.paste(qr_img,positionXY)
 
-
+# 生成整个图片
 def imgGen(message):
     (imgW,imgH)=(600,600)
     (boxW,boxH) = (130,200)
@@ -100,7 +113,6 @@ def imgGen(message):
     draw = ImageDraw.Draw(img)
     draw.text((imgW-60, row2), "微信扫码畅查", fill=colorBad, anchor="mm", font=font8)
 
-
     draw.text((imgW/2, row1), "老黄历", fill=color1, anchor="mm", font=font1)
     draw.text((imgW/5, row1), str(d.year) + "年"  , fill=color1, anchor="mm", font=font2)
     draw.text((imgW*4/5, row1), str(d.month) +"月 "+d.strftime("%b").upper() , fill=color1, anchor="mm", font=font2)
@@ -132,7 +144,6 @@ def imgGen(message):
     holiday = list(filter(str.strip, [a.get_legalHolidays(),a.get_otherHolidays(), a.get_otherLunarHolidays()]))
     if len(holiday) > 0 :
         pushLine(misc, '【今日节日】' + ' '.join(holiday))
-
     pushLine(misc, '【生肖冲煞】' + a.chineseZodiacClash)
     pushLine(misc, '【星座】' + a.starZodiac + ' 【星次】' + a.todayEastZodiac)
     pushLine(misc, '【十二神】' + ' '.join(a.get_today12DayOfficer()))
@@ -144,13 +155,13 @@ def imgGen(message):
     pushLine(misc, '【今日凶煞】' + ' '.join(a.badGodName))
     pushLine(misc, '【九宫飞星】' + a.get_the9FlyStar())
     pushLine(misc, '【吉神方位】' + ' '.join(a.get_luckyGodsDirection()))
-
     draw.text((imgW/2, row6+boxH/2-10), '\n'.join(misc[0:13]), fill=color1, anchor="mm", font=font8)
     
     draw.text((imgW, imgH), '%s年·%s月·%s日·%s时' % (a.year8Char, a.month8Char, a.day8Char, a.twohour8Char) , fill=colorBad, anchor="rs", font=font6)
 
     return img
 
+# 上传图片到微信后台
 def uploadImg(img):
     buf = BytesIO()
     #img.save("rand.png")
