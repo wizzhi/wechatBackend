@@ -158,11 +158,12 @@ def uploadImg(img):
 @robot.handler
 def onMsg(message):
     wantedDate = parseDate( message.content )
-    if wantedDate == False:
+    if wantedDate :
+        img =  imgGen( wantedDate )
+        m_id = uploadImg( img )
+        return ImageReply(message=message, media_id=m_id)
+    else :
         return helpText
-    img =  imgGen( wantedDate )
-    m_id = uploadImg( img )
-    return ImageReply(message=message, media_id=m_id)
 
 @robot.subscribe
 def onSub( message ):
@@ -171,23 +172,25 @@ def onSub( message ):
 from dateutil import parser
 from datetime import timedelta
 def parseDate( txt ):
-    ret = False
     try:
-        ret = parser.parse( txt)
+        return parser.parse( txt )
     except:
-        if "今天" in txt :
-            ret = datetime.datetime.now()
-        elif "明天" in txt :
-            ret = datetime.datetime.now() + timedelta(days=1)
-        elif "后天" in txt :
-            ret = datetime.datetime.now() + timedelta(days=2)
-        elif "昨天" in txt :
-            ret = datetime.datetime.now() - timedelta(days=1)
-        elif "前天" in txt :
-            ret = datetime.datetime.now() - timedelta(days=2)
-    return ret
+        pass
+    if "今天" in txt :
+        delta = 0
+    elif "明天" in txt :
+        delta = 1
+    elif "后天" in txt :
+        delta = 2
+    elif "昨天" in txt :
+        delta = -1
+    elif "前天" in txt :
+        delta = -2
+    else :
+        return False
+    return datetime.datetime.now() + timedelta(days=delta)
 
-helpText = "我现在除了做日历啥也不会，可以把需要的日期发我。\n比如:\n2021.12.30、12/30、明天"
+helpText = "我现在除了做日历啥也不会，可以把需要的日期发我。\n\n比如:\n2021.12.30、12/30、明天..."
 
 # 让服务器监听在 0.0.0.0:80
 robot.config['HOST'] = '0.0.0.0'
