@@ -1,6 +1,6 @@
 # 微信公众号后台服务
-向公众号发送任意信息后返回当日老黄历图片  
-![2021 12 30](https://user-images.githubusercontent.com/3489487/147736683-98aeea14-bde5-4201-906f-701eea1ade8e.png)
+向公众号发送日期信息后返回该日老黄历。支持datetime.dateutil.parser能解析的所有写法，外加“前天”到“后天”的中文。  
+![2022.1.1](https://user-images.githubusercontent.com/3489487/147809507-039d2418-fcd6-4077-87e5-349c465fd8fa.png)
 
 # 运行环境配置
 python3  
