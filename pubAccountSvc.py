@@ -19,17 +19,6 @@ robot.config["APP_SECRET"]="xxxxx"
 #robot.logger.setLevel('DEBUG')
 client=robot.client
 
-'''
-# 帐号主体为个人，无法开通微信认证, 无权定制菜单
-client.create_menu({
-    "button":[{
-         "type": "click",
-         "name": "算一卦",
-         "key": "ouija"
-    }]
-})
-'''
-
 # 当日节气或者下一个节气
 def jieqi( l ):
     if l.todaySolarTerms and l.todaySolarTerms != '无':
@@ -41,7 +30,7 @@ def jieqi( l ):
         return "后天" + l.nextSolarTerm
     return lunar.lunarDayNameList[(d-1) % 30] + l.nextSolarTerm
 
-# 按字数折，为行塞进两边的框。最多取10行，太多写不下
+# 按字数折行，为塞进两边的框。最多取10行，太多写不下
 def wrap2sideBox( txt ):
     txtLines = textwrap.wrap(txt, width=11)
     return '\n'.join(txtLines[0:10])
@@ -74,7 +63,7 @@ def addQR(img, positionXY, color_front, color_back ):
     img.paste(qr_img,positionXY)
 
 # 生成整个图片
-def imgGen(message):
+def imgGen( d ):
     (imgW,imgH)=(600,600)
     (boxW,boxH) = (130,200)
     boxSpacing = 20
@@ -100,14 +89,9 @@ def imgGen(message):
     #font7.set_variation_by_name('Bold')
     font8 = ImageFont.truetype( fontname1, size=12)
 
-    # 这个日期可能最好提出来，参数化
-    d = datetime.datetime.now()
     a = lunar.Lunar(d)
-
     img =  Image.new( mode = "RGB", size = (imgW, imgH), color = colorBG )
-    # optionally render a gradient background
     gradientFill(img, colorBGtop, colorBG)
-
     addQR(img, (507,57),color1, colorBGtop )
     draw = ImageDraw.Draw(img)
     draw.text((imgW-60, row2), "微信扫码畅查", fill=colorBad, anchor="mm", font=font8)
@@ -156,8 +140,8 @@ def imgGen(message):
     pushLine(misc, '【吉神方位】' + ' '.join(a.get_luckyGodsDirection()))
     draw.text((imgW/2, row6+boxH/2-10), '\n'.join(misc[0:13]), fill=color1, anchor="mm", font=font8)
     
-    draw.text((imgW, imgH), '%s年·%s月·%s日·%s时 敬制 ' % (a.year8Char, a.month8Char, a.day8Char, a.twohour8Char) , fill=colorBad, anchor="rs", font=font6)
-
+    now = datetime.datetime.now()
+    draw.text((imgW, imgH), now.strftime("%Y年%m月%d日 %H:%M:%S 敬制 "), fill=colorBad, anchor="rs", font=font6)
     return img
 
 # 上传图片到微信后台
@@ -172,19 +156,32 @@ def uploadImg(img):
     return mid
 
 @robot.handler
-def handle(message, session):
-    count = session.get("count", 0) + 1
-    session["count"] = count
-    if count % 2 == 1 :
-        return ouija( message )
-    return "我现在除了做日历啥也不会，图片已经发了。\n有空多聊聊，说不定很快就能发现我的新本领～"
-
-#robot.key_click("ouija")
-def ouija(message):
-    img =  imgGen( message )
+def handle(message):
+    wantedDate = parseDate( message.content )
+    if wantedDate == False:
+        return helpText
+    img =  imgGen( wantedDate )
     m_id = uploadImg( img )
     return ImageReply(message=message, media_id=m_id)
 
+from dateutil import parser
+def parseDate( txt ):
+    try:
+        return parser.parse( txt)
+    except Exception:
+        if "今天" in txt :
+            return datetime.datetime.now()
+        if "明天" in txt :
+            return datetime.datetime.now() + timedelta(days=1)
+        if "后天" in txt :
+            return datetime.datetime.now() + timedelta(days=2)
+        if "昨天" in txt :
+            return datetime.datetime.now() - timedelta(days=1)
+        if "前天" in txt :
+            return datetime.datetime.now() - timedelta(days=2)
+    return False
+
+helpText = "我现在除了做日历啥也不会，你可以发公历日期查看。比如:\n1.30\n或者:\n明天"
 
 # 让服务器监听在 0.0.0.0:80
 robot.config['HOST'] = '0.0.0.0'
