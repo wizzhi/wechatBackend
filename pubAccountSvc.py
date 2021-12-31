@@ -165,23 +165,25 @@ def handle(message):
     return ImageReply(message=message, media_id=m_id)
 
 from dateutil import parser
+from datetime import timedelta
 def parseDate( txt ):
+    ret = False
     try:
-        return parser.parse( txt)
-    except Exception:
+        ret = parser.parse( txt)
+    except:
         if "今天" in txt :
-            return datetime.datetime.now()
-        if "明天" in txt :
-            return datetime.datetime.now() + timedelta(days=1)
-        if "后天" in txt :
-            return datetime.datetime.now() + timedelta(days=2)
-        if "昨天" in txt :
-            return datetime.datetime.now() - timedelta(days=1)
-        if "前天" in txt :
-            return datetime.datetime.now() - timedelta(days=2)
-    return False
+            ret = datetime.datetime.now()
+        elif "明天" in txt :
+            ret = datetime.datetime.now() + timedelta(days=1)
+        elif "后天" in txt :
+            ret = datetime.datetime.now() + timedelta(days=2)
+        elif "昨天" in txt :
+            ret = datetime.datetime.now() - timedelta(days=1)
+        elif "前天" in txt :
+            ret = datetime.datetime.now() - timedelta(days=2)
+    return ret
 
-helpText = "我现在除了做日历啥也不会，你可以发公历日期查看。比如:\n1.30\n或者:\n明天"
+helpText = "我现在除了做日历啥也不会，可以把需要的日期发我。\n比如:\n2021.12.30、12/30、明天"
 
 # 让服务器监听在 0.0.0.0:80
 robot.config['HOST'] = '0.0.0.0'
