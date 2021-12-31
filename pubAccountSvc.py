@@ -156,13 +156,17 @@ def uploadImg(img):
     return mid
 
 @robot.handler
-def handle(message):
+def onMsg(message):
     wantedDate = parseDate( message.content )
     if wantedDate == False:
         return helpText
     img =  imgGen( wantedDate )
     m_id = uploadImg( img )
     return ImageReply(message=message, media_id=m_id)
+
+@robot.subscribe
+def onSub( message ):
+    return helpText
 
 from dateutil import parser
 from datetime import timedelta
