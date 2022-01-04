@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import datetime
-import textwraptoda
+import textwrap
 from io import BytesIO, BufferedReader
 from PIL import Image, ImageDraw, ImageFont
 
