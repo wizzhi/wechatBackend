@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import datetime
-import textwrap
+import textwraptoda
 from io import BytesIO, BufferedReader
 from PIL import Image, ImageDraw, ImageFont
 
@@ -191,7 +191,7 @@ def parseDate( txt ):
         delta = -2
     else :
         return False
-    return datetime.datetime.today() + timedelta(days=delta)
+    return datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=delta)
 
 helpText = "我现在除了做日历啥也不会，可以把需要的日期发我。\n\n比如:\n2021.12.30、12/30、明天..."
 
