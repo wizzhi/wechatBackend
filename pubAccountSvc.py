@@ -23,12 +23,15 @@ client=robot.client
 def jieqi( l ):
     if l.todaySolarTerms and l.todaySolarTerms != '无':
         return "今日" + l.todaySolarTerms
-    (m,d) = l.nextSolarTermDate
-    if l.lunarDay == d - 1 :
+    nextDate = datetime.datetime(l.nextSolarTermYear, l.nextSolarTermDate[0], l.nextSolarTermDate[1])
+    delta = nextDate - l.date
+    if delta.days == 1:
         return "明日" + l.nextSolarTerm
-    if l.lunarDay == d - 2 :
+    if delta.days == 2:
         return "后天" + l.nextSolarTerm
-    return lunar.lunarDayNameList[(d-1) % 30] + l.nextSolarTerm
+    nextLunar = lunar.Lunar( nextDate )
+    return  nextLunar.lunarDayCn + l.nextSolarTerm
+
 
 # 按字数折行，为塞进两边的框。最多取10行，太多写不下
 def wrap2sideBox( txt ):
