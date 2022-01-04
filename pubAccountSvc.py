@@ -176,7 +176,7 @@ from dateutil import parser
 from datetime import timedelta
 def parseDate( txt ):
     try:
-        return parser.parse( txt )
+        return parser.parse( txt, yearfirst=True, dayfirst=False )
     except:
         pass
     if "今天" in txt :
