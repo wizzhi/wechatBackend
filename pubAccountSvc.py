@@ -172,6 +172,30 @@ def onMsg(message):
 def onSub( message ):
     return helpText
 
+@robot.image
+def onImg(message):
+    import requests
+    r = requests.get(message.img)
+    imgFilePth = './'+ str(message.message_id) + '.png' # './imgMsg/'+ str(message.source) + '/' +str(message.message_id) + '.png'
+    with open( imgFilePth ,'wb') as f:
+        f.write( r.content )
+    
+    # open image in openCV
+    import cv2
+    input_img = cv2.imread( imgFilePth, cv2.IMREAD_COLOR)
+    _, imgEncoded = cv2.imencode('.png', input_img)
+    strEncoded = imgEncoded.tobytes()
+    f4 = BytesIO(strEncoded)
+    f4.seek(0)
+    f4.name = 'any.png'
+    f5 = BufferedReader(f4)
+    f5.seek(0)
+    retJson = client.upload_media('image',f5)
+    m_id = retJson['media_id']
+    reply = ImageReply(message=message, media_id=m_id)
+    return reply
+
+
 from dateutil import parser
 from datetime import timedelta
 def parseDate( txt ):
