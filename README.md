@@ -8,5 +8,6 @@ python3
 微信接口库 `pip3 install werobot`  ( https://github.com/offu/WeRoBot )  
 农历库 `git clone https://github.com/OPN48/pyLunarCalendar.git`  
 二维码库 `pip3 install qrcode`  
-centOS 8 装中文字体 `yum group install Fonts` 查看 `fc-list :lang=zh`  
+centOS 8 装中文字体 `yum group install Fonts` 查看已装字体 `fc-list :lang=zh`  
 运行 `nohup python3 pubAccountSvc.py &`  
+主机设置虚拟内存： https://mp.weixin.qq.com/s/go-xcOJcC0HcPtHDIxoLPA
