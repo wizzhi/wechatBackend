@@ -17,6 +17,11 @@ robot = werobot.WeRoBot(token='xxxxx')
 robot.config["APP_ID"]="xxxxx"
 robot.config["APP_SECRET"]="xxxxx"
 #robot.logger.setLevel('DEBUG')
+
+uriHostPort = "http://xxxxx:80"
+uriAppChat = "/robot"
+uriAppImgEnh = "/imgEnh"
+
 client=robot.client
 
 # 当日节气或者下一个节气
@@ -198,23 +203,11 @@ def onImg(message):
         title="图像增强结果",
         description="点我打开，然后点'继续访问'。因为服务还没有绑定域名 :(",
         img="http://",
-        url=weChartArticalURI + "/html/" + str(message.source) + "/" + fileName
+        url= uriHostPort + uriAppImgEnh + "/html/" + str(message.source) + "/" + fileName
     )
     reply.add_article(article)
     return reply
 
-
-    output_img = imgRestor( input_img )
-
-    imgEncoded = cv2.imencode('.png', output_img, [cv2.IMWRITE_PNG_COMPRESSION, 0])[1]
-    strEncoded = imgEncoded.tobytes()
-    f4 = BytesIO(strEncoded)
-    f4.name = 'any.png'
-    f5 = BufferedReader(f4)
-    retJson = client.upload_media('image',f5)
-    m_id = retJson['media_id']
-    reply = ImageReply(message=message, media_id=m_id)
-    return reply
 
 def imgRestor( input_img_name ):
     # open image in openCV
@@ -277,13 +270,13 @@ from bottle import Bottle, run, static_file
 from werobot.contrib.bottle import make_view
 
 app = Bottle()
-app.route('/robot',
+app.route( uriAppChat,
          ['GET', 'POST'],
          make_view(robot))
 
 
 #------- 2. result HTML page
-@app.route('/imgEnh/html/<userId>/<fileName>')
+@app.route( uriAppImgEnh + '/html/<userId>/<fileName>')
 def imgEnhanceResult(userId, fileName):
     return f"""<!DOCTYPE html>
 <html>
@@ -294,15 +287,15 @@ def imgEnhanceResult(userId, fileName):
 <body>
   <h1>生活道与术，照片变魔术</h1>
   <h2>原始图片：</h2>
-    <img src='/imgEnh/img/{userId}/{fileName}'></img>
+    <img src='{uriAppImgEnh}/img/{userId}/{fileName}'></img>
   <h2>人工智能增强后的效果：</h2>
-    <img id='myImg'  src='/imgEnh/img/busy.gif'></img>
+    <img id='myImg'  src='{uriAppImgEnh}/img/busy.gif'></img>
     <p style="color:darkgray ">图像处理比较费时。具体时长根据图片大小，服务器负载不同差异较大。一般都要几分钟，请耐心等待我们正在不停刷新中。<br/>
     如果需要也可以手动刷新本页面(并不能加速)。 如果真的真的一直刷不出来，有可能是程序出问题了(可怜的小服务器内存不够)可以在公众号对话框给我留言。</p>
     <script>
     img = new Image();
     loadImg = function() {{
-        img.src='/imgEnh/img/{userId}/{fileName}.jpg'+ '?v=' + Date.now()
+        img.src='{uriAppImgEnh}/img/{userId}/{fileName}.jpg'+ '?v=' + Date.now()
     }}
     img.onload = function(){{
         document.getElementById("myImg").src = this.src;
@@ -312,14 +305,14 @@ def imgEnhanceResult(userId, fileName):
     }};
     loadImg();
     </script>
-    <img align='center' src='/imgEnh/img/wechatlogo.png'></img>
+    <img align='center' src='{uriAppImgEnh}/img/wechatlogo.png'></img>
 </body>
 </html>"""
 
 #------- 3. expose the image files
-@app.route('/imgEnh/img/<filename:path>')
+@app.route( uriAppImgEnh + '/img/<filename:path>')
 def send_static(filename):
-    return static_file(filename, root='/root/wechatBackend/imgMsg')
+    return static_file(filename, root='./imgMsg')
 
 #------- 4. now start the web server
 run(app, host='0.0.0.0', port=80)
