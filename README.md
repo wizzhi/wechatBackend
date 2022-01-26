@@ -6,6 +6,7 @@
 ![2022.1.1](https://user-images.githubusercontent.com/3489487/148159388-ebc3e9ad-6937-4327-aa75-34fdc08545c9.png)
 
 # 运行环境配置
+## 基本环境
 python3  
 图形库 `pip3 install pillow`  
 微信接口库 `pip3 install werobot`  ( https://github.com/offu/WeRoBot )  
@@ -13,4 +14,17 @@ python3
 二维码库 `pip3 install qrcode`  
 centOS 8 装中文字体 `yum group install Fonts` 查看已装字体 `fc-list :lang=zh`  
 运行 `nohup python3 pubAccountSvc.py &`  
-主机设置虚拟内存： https://mp.weixin.qq.com/s/go-xcOJcC0HcPtHDIxoLPA
+
+## 如果需要AI图形修复功能还要安装更多库
+具体参考：https://github.com/TencentARC/GFPGAN
+pip install basicsr
+pip install facexlib
+pin install torch
+pip install realesrgan
+pip install gfpgan
+
+外加模型下载：
+./model/downloadModels.sh
+
+主机设置虚拟
+内存： https://mp.weixin.qq.com/s/go-xcOJcC0HcPtHDIxoLPA
