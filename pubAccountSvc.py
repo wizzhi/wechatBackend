@@ -262,7 +262,9 @@ def parseDate( txt ):
         return False
     return datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=delta)
 
-helpText = "我现在除了做日历啥也不会，可以把需要的日期发我。\n\n比如:\n2021.12.30、12/30、明天..."
+helpText = """需要自动p图直接发图给我，查老黄历发日期。
+
+比如:2021.12.30、12/30、明天..."""
 
 
 #------- 1. weChat callbacks
@@ -286,11 +288,13 @@ def imgEnhanceResult(userId, fileName):
 </head>
 <body>
   <h1>生活道与术，照片变魔术</h1>
-  <h2>原始图片：</h2>
+  <h2>用户上传原图：</h2>
     <img src='{uriAppImgEnh}/img/{userId}/{fileName}'></img>
   <h2>人工智能增强后的效果：</h2>
     <img id='myImg'  src='{uriAppImgEnh}/img/busy.gif'></img>
-    <p style="color:darkgray ">图像处理比较费时。具体时长根据图片大小，服务器负载不同差异较大。一般都要几分钟，请耐心等待我们正在不停刷新中。<br/>
+    <p style="color:darkgray">
+    <a href='https://mp.weixin.qq.com/s/4ahSuA40t2ZrRh4jPjHfnA'>背景介绍</a><br/>
+    图像处理比较费时。具体时长根据图片大小，服务器负载不同差异较大。一般都要几分钟，请耐心等待我们正在不停刷新中。<br/>
     如果需要也可以手动刷新本页面(并不能加速)。 如果真的真的一直刷不出来，有可能是程序出问题了(可怜的小服务器内存不够)可以在公众号对话框给我留言。</p>
     <script>
     img = new Image();
