@@ -319,4 +319,5 @@ def send_static(filename):
     return static_file(filename, root='./imgMsg')
 
 #------- 4. now start the web server
-run(app, host='0.0.0.0', port=80)
+if __name__ == "__main__":
+    run(app, server='gunicorn', host='0.0.0.0', port=80)
