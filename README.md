@@ -16,6 +16,11 @@ python3
 centOS 8 装中文字体 `yum group install Fonts` 查看已装字体 `fc-list :lang=zh`  
 运行 `nohup python3 pubAccountSvc.py &`  
 
+### 生产环境用gunicorn 做WSGI服务器
+安装 `pip3 install gunicorn`  
+运习 `nohup gunicorn pubAccountSvc:app --bind='0.0.0.0:80' &`  
+或者 `nohup python3 pubAccountSvc.py &` 都行  
+
 ### 如果需要AI图形修复功能还要安装更多库
 具体参考：https://github.com/TencentARC/GFPGAN  
 pip install basicsr  
