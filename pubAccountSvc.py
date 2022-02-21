@@ -11,6 +11,7 @@ sys.path.append("./pyLunarCalendar")
 import lunar
 import qrcode
 import werobot
+import webHelper
 from werobot.replies import ImageReply
 
 robot = werobot.WeRoBot(token='xxxxx')
@@ -21,6 +22,7 @@ robot.config["APP_SECRET"]="xxxxx"
 uriHostPort = "http://xxxxx:80"
 uriAppChat = "/robot"
 uriAppImgEnh = "/imgEnh"
+uriAppMyClan = "/myClan"
 
 client=robot.client
 
@@ -177,6 +179,19 @@ def onMsg(message):
 def onSub( message ):
     return helpText
 
+@robot.filter("家谱","family","tree","ft","clan")
+def clan(message):
+    from werobot.replies import ArticlesReply, Article
+    reply = ArticlesReply(message=message)
+    article = Article(
+        title="我的家谱",
+        description="点我打开，然后点'继续访问'。因为服务还没有绑定域名 :(",
+        img="http://",
+        url= uriHostPort + uriAppMyClan
+    )
+    reply.add_article(article)
+    return reply
+
 @robot.image
 def onImg(message):
     import requests
@@ -277,41 +292,16 @@ app.route( uriAppChat,
          make_view(robot))
 
 
-#------- 2. result HTML page
+#------- 2.1 result HTML page for AI image processing
 @app.route( uriAppImgEnh + '/html/<userId>/<fileName>')
 def imgEnhanceResult(userId, fileName):
-    return f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>生活道与术，照片变魔术</title>
-</head>
-<body>
-  <h1>生活道与术，照片变魔术</h1>
-  <h2>用户上传原图：</h2>
-    <img src='{uriAppImgEnh}/img/{userId}/{fileName}'></img>
-  <h2>人工智能增强后的效果：</h2>
-    <img id='myImg'  src='{uriAppImgEnh}/img/busy.gif'></img>
-    <p style="color:darkgray">
-    <a href='https://mp.weixin.qq.com/s/4ahSuA40t2ZrRh4jPjHfnA'>背景介绍</a><br/>
-    图像处理比较费时。具体时长根据图片大小，服务器负载不同差异较大。一般都要几分钟，请耐心等待我们正在不停刷新中。<br/>
-    如果需要也可以手动刷新本页面(并不能加速)。 如果真的真的一直刷不出来，有可能是程序出问题了(可怜的小服务器内存不够)可以在公众号对话框给我留言。</p>
-    <script>
-    img = new Image();
-    loadImg = function() {{
-        img.src='{uriAppImgEnh}/img/{userId}/{fileName}.jpg'+ '?v=' + Date.now()
-    }}
-    img.onload = function(){{
-        document.getElementById("myImg").src = this.src;
-    }};
-    img.onerror = function(){{
-        setTimeout('loadImg()',15000);
-    }};
-    loadImg();
-    </script>
-    <img align='center' src='{uriAppImgEnh}/img/wechatlogo.png'></img>
-</body>
-</html>"""
+    return webHelper.page_photoEnh.format(uriAppImgEnh=uriAppImgEnh,userId=userId,fileName=fileName)
+
+
+#------- 2.2 Homepage for family tree app
+@app.route( uriAppMyClan )
+def myClanHomepage():
+    return webHelper.page_mobi_list( {"id":("title","desc"),"id2":["Hello", "Hello, world!"]});
 
 #------- 3. expose the image files
 @app.route( uriAppImgEnh + '/img/<filename:path>')
