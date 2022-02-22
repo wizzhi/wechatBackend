@@ -21,8 +21,6 @@ robot.config["APP_SECRET"]="xxxxx"
 
 uriHostPort = "http://xxxxx:80"
 uriAppChat = "/robot"
-uriAppImgEnh = "/imgEnh"
-uriAppMyClan = "/myClan"
 
 client=robot.client
 
@@ -187,7 +185,7 @@ def clan(message):
         title="我的家谱",
         description="点我打开，然后点'继续访问'。因为服务还没有绑定域名 :(",
         img="http://",
-        url= uriHostPort + uriAppMyClan
+        url= uriHostPort + webHelper.APP_PATH_myClan
     )
     reply.add_article(article)
     return reply
@@ -218,7 +216,7 @@ def onImg(message):
         title="图像增强结果",
         description="点我打开，然后点'继续访问'。因为服务还没有绑定域名 :(",
         img="http://",
-        url= uriHostPort + uriAppImgEnh + "/html/" + str(message.source) + "/" + fileName
+        url= uriHostPort + webHelper.APP_PATH_imgEnh + "/html/" + str(message.source) + "/" + fileName
     )
     reply.add_article(article)
     return reply
@@ -293,18 +291,22 @@ app.route( uriAppChat,
 
 
 #------- 2.1 result HTML page for AI image processing
-@app.route( uriAppImgEnh + '/html/<userId>/<fileName>')
+@app.route( webHelper.APP_PATH_imgEnh + '/html/<userId>/<fileName>')
 def imgEnhanceResult(userId, fileName):
-    return webHelper.page_photoEnh.format(uriAppImgEnh=uriAppImgEnh,userId=userId,fileName=fileName)
+    return webHelper.page_photoEnh(userId,fileName)
 
 
 #------- 2.2 Homepage for family tree app
-@app.route( uriAppMyClan )
+@app.route( webHelper.APP_PATH_myClan )
 def myClanHomepage():
+    return webHelper.page_mobi_tree( {"id":("title","desc"),"id2":["Hello", "Hello, world!"]});
+
+@app.route( webHelper.APP_PATH_myClan + "/list" )
+def myClanList():
     return webHelper.page_mobi_list( {"id":("title","desc"),"id2":["Hello", "Hello, world!"]});
 
 #------- 3. expose the image files
-@app.route( uriAppImgEnh + '/img/<filename:path>')
+@app.route( webHelper.APP_PATH_imgEnh + '/img/<filename:path>')
 def send_static(filename):
     return static_file(filename, root='./imgMsg')
 

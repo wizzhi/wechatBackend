@@ -1,13 +1,18 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
+
+APP_PATH_imgEnh = "/imgEnh"
+APP_PATH_myClan = "/myClan"
+
+
 def htmlPreview( str ):
     "helper to render the input str as HTML in iPython Notebook"
     from IPython.core.display import display, HTML
     display(HTML(str))
 
 
-list_js_lib = {
+JS_LIBS = {
     "tree": [
         "https://d3js.org/d3.v5.min.js",
         "https://unpkg.com/@hpcc-js/wasm@0.3.11/dist/index.min.js",
@@ -15,13 +20,13 @@ list_js_lib = {
 }
 
 def section_html_header( func_key_list = [""]):
-    "decide the js libraries to include based on key:[ libs ] in list_js_lib"
+    "decide the js libraries to include based on key:[ libs ] in JS_LIBS"
     if type(func_key_list) == str :
         func_key_list = [func_key_list]
     uri_list = []
     for key in func_key_list:
-        if key in list_js_lib:
-            uri_list += list_js_lib[key]
+        if key in JS_LIBS:
+            uri_list += JS_LIBS[key]
     return '''
 <!DOCTYPE html>
 <html>
@@ -36,7 +41,7 @@ def section_html_header( func_key_list = [""]):
 #print( section_html_header("tree") );
 
 
-section_header = '''
+section_header = f'''
 <body>
     <header class="w3-bar w3-card w3-theme">
         <button class="w3-bar-item w3-button w3-xxxlarge w3-hover-theme" onclick="openSidebar()">&#9776;</button>
@@ -50,16 +55,16 @@ section_header = '''
             <img class="w3-circle" src="img_avatar.jpg" alt="avatar" style="width:75%">
         </div>
         </div>
-        <a class="w3-bar-item w3-button" href="#">我创建的</a>
+        <a class="w3-bar-item w3-button" href="{APP_PATH_myClan}/list">我创建的</a>
         <a class="w3-bar-item w3-button" href="#">我参与的</a>
         <a class="w3-bar-item w3-button" href="#">关于我们</a>
     </nav>
     <script>
-        function openSidebar() { document.getElementById("mySidebar").style.display = "block"; }
-        function closeSidebar() { document.getElementById("mySidebar").style.display = "none"; }
+        function openSidebar() {{ document.getElementById("mySidebar").style.display = "block"; }}
+        function closeSidebar() {{ document.getElementById("mySidebar").style.display = "none"; }}
         closeSidebar();
     </script>
-    <a class="w3-button w3-xlarge w3-circle w3-theme-action" style="position:fixed;top:48px;right:24px;">+</a>
+    <a class="w3-button w3-xlarge w3-circle w3-theme-action" style="position:fixed;top:60px;right:24px;">+</a>
 '''
 
 section_footer = '''
@@ -109,28 +114,70 @@ def page_mobi_tree( tree_dict ):
         .on("initEnd", render);
 
     function render() {
-        var dotLines = dots[dotIndex];
-        var dot = dotLines.join('');
+        var dot = `
+digraph familytree {
+  edge [dir=none];
+  node [shape=point,width=0];
+  graph [splines=ortho];
+
+  "Herb"      [shape=box regular=0, color="blue", style="filled" fillcolor="lightblue"] ;
+  "Homer"     [shape=box, regular=0, color="blue", style="bold, filled" fillcolor="lightblue"] ;
+  "Marge"     [shape=box, regular=0, color="red", style="filled" fillcolor="pink"] ;
+  "Clancy"    [shape=box, regular=0, color="blue", style="filled" fillcolor="lightblue"] ;
+  "Jackeline" [shape=box, regular=0, color="red", style="filled" fillcolor="pink"] ;
+  "Abraham"   [shape=box, regular=0, color="blue", style="filled" fillcolor="lightblue"] ;
+  "Mona"      [shape=box, regular=0, color="red", style="filled" fillcolor="pink"] ;
+  "Patty"     [shape=box, regular=0, color="red", style="filled" fillcolor="pink"] ;
+  "Selma"     [shape=box, regular=0, color="red", style="filled" fillcolor="pink"] ;
+  "Bart"      [shape=box, regular=0, color="blue", style="filled" fillcolor="lightblue"] ;
+  "Lisa"      [shape=box, regular=0, color="red", style="filled" fillcolor="pink"] ;
+  "Maggie"    [shape=box, regular=0, color="red", style="filled" fillcolor="pink"] ;
+
+  a1 [label="",width=.05];
+  b1 [shape=point,label="",height=0];
+  b2 [shape=point,label="",width=0];
+  b3 [shape=point,label="",width=0];
+  {rank=same; Abraham -> a1 -> Mona};
+  {rank=same; b1 -> b2 -> b3};
+  {rank=same; Herb; Homer};
+  a1 -> b2
+  b1 -> Herb
+  b3 -> Homer
+
+  p1 [label="",width=.05];
+  q2 [label=""];
+#  q3 [label=""];
+  {rank=same; Homer -> p1 -> Marge};
+#  {rank=same; q1 -> q2 -> q3};
+  {rank=same; Bart; Lisa; Maggie};
+  p1 -> q2 -> {Bart; Lisa; Maggie}
+
+  x1 [label="",width=.05];
+  y1 [label=""];
+  y2 [label=""];
+  y3 [label=""];
+  {rank=same; Clancy -> x1 -> Jackeline};
+  {rank=same; y1 -> y2 -> y3};
+
+  "the 4th"    [shape=box, regular=0, color="red", style="filled" fillcolor="pink", image="https://www.baidu.com/img/flexible/logo/pc/result.png"];
+
+  {rank=same; Patty; Selma; Marge; "the 4th"};
+  x1 -> y2;
+  y1 -> { Marge; Patty}
+  y3 -> { Selma; "the 4th"}
+}
+	`
         graphviz
             .renderDot(dot)
     }
-    var dots = [
-        [
-            'digraph  {',
-            '    node [style="filled"]',
-            '    a [fillcolor="#d62728"]',
-            '    b [fillcolor="#1f77b4"]',
-            '    a -> b',
-            '}'
-        ]
-    ];
     </script>
     ''' + section_footer
 test = page_mobi_tree( {...})
 print(test)
 #htmlPreview( test )
 
-page_photoEnh = '''
+def page_photoEnh( userId, fileName):
+    return f'''
 <!DOCTYPE html>
 <html>
 <head>
@@ -140,9 +187,9 @@ page_photoEnh = '''
 <body>
   <h1>生活道与术，照片变魔术</h1>
   <h2>用户上传原图：</h2>
-    <img src='{uriAppImgEnh}/img/{userId}/{fileName}'></img>
+    <img src='{APP_PATH_imgEnh}/img/{userId}/{fileName}'></img>
   <h2>人工智能增强后的效果：</h2>
-    <img id='myImg'  src='{uriAppImgEnh}/img/busy.gif'></img>
+    <img id='myImg'  src='{APP_PATH_imgEnh}/img/busy.gif'></img>
     <p style="color:darkgray">
     <a href='https://mp.weixin.qq.com/s/4ahSuA40t2ZrRh4jPjHfnA'>背景介绍</a><br/>
     图像处理比较费时。具体时长根据图片大小，服务器负载不同差异较大。一般都要几分钟，请耐心等待我们正在不停刷新中。<br/>
@@ -150,7 +197,7 @@ page_photoEnh = '''
     <script>
     img = new Image();
     loadImg = function() {{
-        img.src='{uriAppImgEnh}/img/{userId}/{fileName}.jpg'+ '?v=' + Date.now()
+        img.src='{APP_PATH_imgEnh}/img/{userId}/{fileName}.jpg'+ '?v=' + Date.now()
     }}
     img.onload = function(){{
         document.getElementById("myImg").src = this.src;
@@ -160,9 +207,9 @@ page_photoEnh = '''
     }};
     loadImg();
     </script>
-    <img align='center' src='{uriAppImgEnh}/img/wechatlogo.png'></img>
+    <img align='center' src='{APP_PATH_imgEnh}/img/wechatlogo.png'></img>
 </body>
 </html>'''
-#htmlPreview(page_photoEnh)
+#htmlPreview(page_photoEnh("uid","fileName"))
 
 
