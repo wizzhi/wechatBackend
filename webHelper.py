@@ -4,7 +4,7 @@
 
 APP_PATH_imgEnh = "/imgEnh"
 APP_PATH_myClan = "/myClan"
-
+APP_PATH_steps  = "/pseudometer"
 
 def htmlPreview( str ):
     "helper to render the input str as HTML in iPython Notebook"
@@ -176,6 +176,20 @@ test = page_mobi_tree( {...})
 print(test)
 #htmlPreview( test )
 
+def page_pseudometer():
+    'return the html page'
+
+    return section_html_header() + '''
+    <body>
+    <header class="w3-bar w3-card w3-theme">
+        <button class="w3-bar-item w3-button w3-xxxlarge w3-hover-theme" onclick="openSidebar()">&#9776;</button>
+        <h1 class="w3-bar-item">自由刷步</h1>
+    </header>
+    <div class="w3-container">
+        my form gose here
+    </div>''' + section_footer
+
+
 def page_photoEnh( userId, fileName):
     return f'''
 <!DOCTYPE html>
@@ -210,6 +224,7 @@ def page_photoEnh( userId, fileName):
     <img align='center' src='{APP_PATH_imgEnh}/img/wechatlogo.png'></img>
 </body>
 </html>'''
+
 #htmlPreview(page_photoEnh("uid","fileName"))
 
 

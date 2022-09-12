@@ -190,6 +190,19 @@ def clan(message):
     reply.add_article(article)
     return reply
 
+@robot.filter("刷步","计步器","步数")
+def pseudometer(message):
+    from werobot.replies import ArticlesReply, Article
+    reply = ArticlesReply(message=message)
+    article = Article(
+        title="自助刷步",
+        description="点我打开，然后点'继续访问'。因为服务还没有绑定域名 :(",
+        img="http://",
+        url= uriHostPort + webHelper.APP_PATH_steps
+    )
+    reply.add_article(article)
+    return reply
+
 @robot.image
 def onImg(message):
     import requests
@@ -304,6 +317,11 @@ def myClanHomepage():
 @app.route( webHelper.APP_PATH_myClan + "/list" )
 def myClanList():
     return webHelper.page_mobi_list( {"id":("title","desc"),"id2":["Hello", "Hello, world!"]});
+
+#------- 2.3 web page for psuedo-pedometer
+@app.route( webHelper.APP_PATH_steps )
+def myClanHomepage():
+    return webHelper.page_pseudometer();
 
 #------- 3. expose the image files
 @app.route( webHelper.APP_PATH_imgEnh + '/img/<filename:path>')
